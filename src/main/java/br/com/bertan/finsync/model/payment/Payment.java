@@ -1,5 +1,6 @@
-package br.com.bertan.finsync.model;
+package br.com.bertan.finsync.model.payment;
 
+import br.com.bertan.finsync.model.Money;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
