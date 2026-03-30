@@ -1,4 +1,4 @@
-package br.com.bertan.finsync.model;
+package br.com.bertan.finsync.model.reconciliation;
 
 public enum ReconciliationStatus {
     MATCHED,
