@@ -1,3 +1,16 @@
 spring:
   application:
     name: finsync
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}/${DB_NAME:finsync_monolith}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
