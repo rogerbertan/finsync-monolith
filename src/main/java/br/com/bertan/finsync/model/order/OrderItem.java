@@ -28,7 +28,7 @@ public class OrderItem {
     @Embedded
     private Money unitPrice;
 
-    static OrderItem of(Order order, String description, Integer quantity, Money unitPrice) {
+    public static OrderItem of(Order order, String description, Integer quantity, Money unitPrice) {
         if (description == null || description.isBlank())
             throw new IllegalArgumentException("Item description cannot be blank");
         if (quantity == null || quantity <= 0)
