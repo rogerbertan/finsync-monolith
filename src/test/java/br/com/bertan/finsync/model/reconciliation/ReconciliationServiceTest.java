@@ -92,5 +92,16 @@ class ReconciliationServiceTest {
                     .isThrownBy(() -> reconciliationService.reconcile(pendingOrder, payment))
                     .withMessage("Order must be in PENDING status to be reconciled");
         }
+
+        @Test
+        void withSameAmountButDifferentCurrency_shouldReturnDivergentResult() {
+            Money usdAmount = new Money(new BigDecimal("100.00"), "USD");
+            Payment payment = Payment.receive("gw-001", "idem-001", ORDER_REF, usdAmount, PaymentMethod.PIX);
+
+            ReconciliationResult result = reconciliationService.reconcile(pendingOrder, payment);
+
+            assertThat(result.getStatus()).isEqualTo(ReconciliationStatus.DIVERGED);
+            assertThat(result.getDivergenceReason()).contains("BRL").contains("USD");
+        }
     }
 }
