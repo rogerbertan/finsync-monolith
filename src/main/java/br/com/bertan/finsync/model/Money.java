@@ -30,4 +30,15 @@ public class Money {
         this.value = value.setScale(2, RoundingMode.HALF_UP);
         this.currency = currency;
     }
+
+    public Money multiply(int quantity) {
+        if (quantity < 0) throw new IllegalArgumentException("Quantity cannot be negative");
+        return new Money(this.value.multiply(BigDecimal.valueOf(quantity)), this.currency);
+    }
+
+    public Money add(Money other) {
+        if (!this.currency.equals(other.currency))
+            throw new IllegalArgumentException("Cannot add amounts with different currencies");
+        return new Money(this.value.add(other.value), this.currency);
+    }
 }
