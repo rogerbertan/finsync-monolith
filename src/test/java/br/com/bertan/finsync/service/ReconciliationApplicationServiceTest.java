@@ -21,7 +21,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -133,6 +137,66 @@ class ReconciliationApplicationServiceTest {
             service.runReconciliation();
 
             verify(reconciliationResultRepository, never()).save(any());
+        }
+    }
+
+    @Nested
+    class GetReport {
+
+        private final Pageable pageable = Pageable.unpaged();
+        private final LocalDateTime from = LocalDateTime.of(2024, 1, 1, 0, 0);
+        private final LocalDateTime to = LocalDateTime.of(2024, 12, 31, 23, 59);
+
+        @Test
+        void withStatusAndDateRange_shouldQueryByStatusAndDateRange() {
+            Page<ReconciliationResult> expected = Page.empty();
+            when(reconciliationResultRepository.findAllByStatusAndReconciledAtBetween(
+                    ReconciliationStatus.MATCHED, from, to, pageable)).thenReturn(expected);
+
+            Page<ReconciliationResult> result = service.getReport(from, to, ReconciliationStatus.MATCHED, pageable);
+
+            assertThat(result).isSameAs(expected);
+            verify(reconciliationResultRepository).findAllByStatusAndReconciledAtBetween(
+                    ReconciliationStatus.MATCHED, from, to, pageable);
+            verifyNoMoreInteractions(reconciliationResultRepository);
+        }
+
+        @Test
+        void withStatusOnly_shouldQueryByStatus() {
+            Page<ReconciliationResult> expected = Page.empty();
+            when(reconciliationResultRepository.findAllByStatus(ReconciliationStatus.DIVERGED, pageable))
+                    .thenReturn(expected);
+
+            Page<ReconciliationResult> result = service.getReport(null, null, ReconciliationStatus.DIVERGED, pageable);
+
+            assertThat(result).isSameAs(expected);
+            verify(reconciliationResultRepository).findAllByStatus(ReconciliationStatus.DIVERGED, pageable);
+            verifyNoMoreInteractions(reconciliationResultRepository);
+        }
+
+        @Test
+        void withDateRangeOnly_shouldQueryByDateRange() {
+            Page<ReconciliationResult> expected = Page.empty();
+            when(reconciliationResultRepository.findAllByReconciledAtBetween(from, to, pageable))
+                    .thenReturn(expected);
+
+            Page<ReconciliationResult> result = service.getReport(from, to, null, pageable);
+
+            assertThat(result).isSameAs(expected);
+            verify(reconciliationResultRepository).findAllByReconciledAtBetween(from, to, pageable);
+            verifyNoMoreInteractions(reconciliationResultRepository);
+        }
+
+        @Test
+        void withNoFilters_shouldQueryAll() {
+            Page<ReconciliationResult> expected = Page.empty();
+            when(reconciliationResultRepository.findAll(pageable)).thenReturn(expected);
+
+            Page<ReconciliationResult> result = service.getReport(null, null, null, pageable);
+
+            assertThat(result).isSameAs(expected);
+            verify(reconciliationResultRepository).findAll(pageable);
+            verifyNoMoreInteractions(reconciliationResultRepository);
         }
     }
 }
