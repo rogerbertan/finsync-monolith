@@ -3,6 +3,7 @@ package br.com.bertan.finsync.controller;
 import br.com.bertan.finsync.exception.InvalidOrderStateException;
 import br.com.bertan.finsync.exception.InvalidPaymentStateException;
 import br.com.bertan.finsync.exception.InvalidReconciliationStateException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +15,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     ProblemDetail handleIllegalArgument(IllegalArgumentException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    ProblemDetail handleNotFound(EntityNotFoundException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler({
